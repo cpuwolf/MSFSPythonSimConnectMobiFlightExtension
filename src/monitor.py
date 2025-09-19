@@ -24,15 +24,19 @@ vr.clear_sim_variables()
 # Example write variable
 vr.set("(L:S_OH_ELEC_EXT_PWR) ++ (>L:S_OH_ELEC_EXT_PWR)")
 
-vr.ping()
-vr.get_version()
+#vr.ping()
+#vr.get_version()
 
 vr.list_sim_variables()
 wait_counter = 0
 while wait_counter < 50: # wait max 500ms
     if not vr.lvars_list_end: # wait max 500ms
-        sleep(0.01) # wait 10ms
+        sleep(2) # wait 10ms
         wait_counter = wait_counter + 1
+        if wait_counter % 2 == 0:
+            vr.ping()
+        else:
+            vr.list_sim_variables()
     else:
         break 
     
