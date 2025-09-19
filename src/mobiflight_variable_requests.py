@@ -28,7 +28,7 @@ class MobiFlightVariableRequests:
         self.CLIENT_DATA_AREA_RESPONSE = 2
         self.FLAG_DEFAULT = 0
         self.FLAG_CHANGED = 1
-        self.DATA_STRING_SIZE = 256
+        self.DATA_STRING_SIZE = 1024
         self.DATA_STRING_OFFSET = 0
         self.DATA_STRING_DEFINITION_ID = 0
         self.sm.register_client_data_handler(self.client_data_callback_handler)
@@ -185,4 +185,11 @@ class MobiFlightVariableRequests:
 
     def list_sim_variables(self):
         logging.info("list_sim_variables MF.LVars.List")
-        self.send_command("MF.LVars.List")       
+        self.send_command("MF.LVars.List")
+    
+    def ping(self):
+        logging.info("ping MF.Ping")
+        self.send_command("MF.Ping")
+    def get_version(self):
+        logging.info("get_version")
+        self.send_command("MF.Version.Get") 
