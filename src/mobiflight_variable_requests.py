@@ -134,13 +134,16 @@ class MobiFlightVariableRequests:
             elif text.startswith("MF.Version"):
                 logging.info("client_data_callback_handler %s", text)
             else:
-                if text not in self.lvars_list:
-                    self.lvars_list.append(text)
-                    fout = open("lvars.txt", "w")
-                    unique_list = list(set(self.lvars_list))
-                    unique_list.sort()
-                    for lvar in unique_list:
-                        fout.write(lvar+"\n")
+                if ";" in text:
+                    lvarslist = text.split(";")
+                    for lvar in lvarslist:
+                        if len(lvar) > 0 not in self.lvars_list:
+                            self.lvars_list.append(lvar)
+                            fout = open("lvars.txt", "w")
+                            unique_list = list(set(self.lvars_list))
+                            unique_list.sort()
+                            for lvar in unique_list:
+                                fout.write(lvar+"\n")
                 
         elif client_data.dwDefineID in self.sim_vars:
             data_bytes = struct.pack("I", client_data.dwData[0])

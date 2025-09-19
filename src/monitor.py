@@ -27,7 +27,7 @@ vr.set("(L:S_OH_ELEC_EXT_PWR) ++ (>L:S_OH_ELEC_EXT_PWR)")
 vr.ping()
 vr.get_version()
 
-#vr.list_sim_variables()
+vr.list_sim_variables()
 wait_counter = 0
 while wait_counter < 50: # wait max 500ms
     if not vr.lvars_list_end: # wait max 500ms
@@ -46,9 +46,9 @@ while True:
     #hdg = vr.get("(L:A32NX_AUTOPILOT_HEADING_SELECTED)")
     #mode = vr.get("(L:A32NX_FMA_LATERAL_MODE)")
     #continue
-
-    for rpn in vr.lvars_list:
-        rpnstr = "(L:" + rpn + ")"
-        #logging.info("%s", rpnstr)
-        t = vr.get(rpnstr)
+    if vr.lvars_list_end:
+        for rpn in vr.lvars_list:
+            rpnstr = "(L:" + rpn + ")"
+            #logging.info("%s", rpnstr)
+            t = vr.get(rpnstr)
     sleep(0.2)
