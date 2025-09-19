@@ -43,6 +43,7 @@ while wait_counter < 50: # wait max 500ms
         break 
     
 fout = open("lvars.txt", "w")
+vr.lvars_list.sort()
 unique_list = list(set(vr.lvars_list))
 for lvar in unique_list:
     fout.write(lvar+"\n")
