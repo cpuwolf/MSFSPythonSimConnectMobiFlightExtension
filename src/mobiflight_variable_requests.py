@@ -34,6 +34,7 @@ class MobiFlightVariableRequests:
         self.sm.register_client_data_handler(self.client_data_callback_handler)
         self.initialize_client_data_areas()
         self.lvars_list = []
+        self.lvar_list_end = False
 
 
     def add_to_client_data_definition(self, definition_id, offset, size):
@@ -115,8 +116,10 @@ class MobiFlightVariableRequests:
             text = null_terminated_bytes.decode('utf-8')
             print(text)
             if text == "MF.LVars.List.Start":
+                logging.info("client_data_callback_handler lvar start")
                 self.lvars_list.clear()
             elif text == "MF.LVars.List.End":
+                self.lvar_list_end = True
                 logging.info("client_data_callback_handler lvar end=%d", len(self.lvars_list))
             elif text == "MF.Pong":
                 logging.info("client_data_callback_handler Pong")

@@ -3,7 +3,7 @@
     {
       "match": ".py$",
       "isAsync": false,
-      "cmd": "${workspaceRoot}\\install\\exec.cmd",
+      "cmd": "${workspaceRoot}\\install\\execc.cmd",
       "event": "onFileChange"
     }
   ]

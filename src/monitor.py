@@ -24,9 +24,10 @@ vr.clear_sim_variables()
 # Example write variable
 vr.set("(L:S_OH_ELEC_EXT_PWR) ++ (>L:S_OH_ELEC_EXT_PWR)")
 
-vr.list_sim_variables()
 
-#sys.exit(0)
+while not vr.lvar_list_end:
+    vr.list_sim_variables()
+    sleep(1) # wait 1000ms
 
 while True:
     #alt_ground = vr.get("(A:GROUND ALTITUDE,Meters)")
@@ -35,4 +36,8 @@ while True:
     #ap1 = vr.get("(L:A32NX_AUTOPILOT_1_ACTIVE)")
     #hdg = vr.get("(L:A32NX_AUTOPILOT_HEADING_SELECTED)")
     #mode = vr.get("(L:A32NX_FMA_LATERAL_MODE)")
+    for rpn in vr.lvars_list:
+        rpnstr = "(L:" + rpn + ")"
+        logging.info("%s", rpnstr)
+        t = vr.get(rpnstr)
     sleep(1)
