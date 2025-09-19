@@ -4,7 +4,7 @@ from time import sleep
 from ctypes import sizeof
 from ctypes.wintypes import FLOAT
 from SimConnect.Enum import SIMCONNECT_CLIENT_DATA_PERIOD, SIMCONNECT_UNUSED
-
+import time
 
 class SimVariable:
     def __init__(self, id, name, float_value = None):
@@ -12,6 +12,7 @@ class SimVariable:
         self.name = name
         self.float_value = float_value
         self.initialized = False
+        self.ts_ms = 0
     def __str__(self):
         return f"Id={self.id}, value={self.float_value}, name={self.name}"
 
@@ -69,7 +70,7 @@ class MobiFlightVariableRequests:
 
 
     def send_data(self, data_area_id, definition_id, size, dataBytes):
-        logging.info("send_data data_area_id=%s, definition_id=%s, size=%s, dataBytes=%s", data_area_id, definition_id, size, dataBytes)
+        logging.info("send_data data_area_id=%s, definition_id=%s, size=%s", data_area_id, definition_id, size)
         self.sm.dll.SetClientData(
             self.sm.hSimConnect,
             data_area_id, 
@@ -150,7 +151,10 @@ class MobiFlightVariableRequests:
                 sim_var.initialized = True
             else:
                 self.sim_vars[client_data.dwDefineID].float_value = float_value
-            logging.debug("client_data_callback_handler %s, raw=%s", sim_var, float_value)
+            new_ts_ms = self.get_timestamp_ms()
+            if  new_ts_ms - self.sim_vars[client_data.dwDefineID].ts_ms > 2000:
+                logging.debug("CB %s, raw=%s", sim_var, float_value)
+            self.sim_vars[client_data.dwDefineID].ts_ms = new_ts_ms
         else:
             logging.warning("client_data_callback_handler DefinitionID %d not found!", client_data.dwDefineID)
 
@@ -169,16 +173,9 @@ class MobiFlightVariableRequests:
         # determine id and return value
         variable_id = self.sim_var_name_to_id[variableString]
         sim_var = self.sim_vars[variable_id]
-        wait_counter = 0
-        while wait_counter < 50: # wait max 500ms
-            if sim_var.float_value is None:
-                sleep(0.01) # wait 10ms
-                wait_counter = wait_counter + 1
-            else:
-                break
         if sim_var.float_value is None and sim_var.initialized:
             sim_var.float_value = 0.0
-        logging.debug("get %s. wait_counter=%s, Return=%s", variableString, wait_counter, sim_var.float_value)
+        #logging.debug("get %s. wait_counter=%s, Return=%s", variableString, wait_counter, sim_var.float_value)
         return sim_var.float_value
 
 
@@ -201,6 +198,14 @@ class MobiFlightVariableRequests:
     def set_lvars_list(self, list):
         for i in list:
             self.lvars_list.append(i)
+
+    def get_timestamp_ms(self):
+        # Get the current time in seconds since the epoch (as a float)
+        seconds_since_epoch = time.time()
+        # Convert to milliseconds and cast to an integer
+        milliseconds = int(seconds_since_epoch * 1000)
+        return milliseconds
+        
     
     def ping(self):
         logging.info("ping MF.Ping")
