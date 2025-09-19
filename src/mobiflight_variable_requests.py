@@ -35,6 +35,12 @@ class MobiFlightVariableRequests:
         self.initialize_client_data_areas()
         self.lvars_list = []
         self.lvars_list_end = False
+        try:
+            with open("lvars.txt") as file:
+                lines = [line.rstrip() for line in file]
+            self.set_lvars_list(lines)
+        except FileNotFoundError:
+            logging.info("cannot find file")  
 
 
     def add_to_client_data_definition(self, definition_id, offset, size):
@@ -127,7 +133,13 @@ class MobiFlightVariableRequests:
             elif text.startswith("MF.Version"):
                 logging.info("client_data_callback_handler %s", text)
             else:
-                self.lvars_list.append(text)
+                if text not in self.lvars_list:
+                    self.lvars_list.append(text)
+                    fout = open("lvars.txt", "w")
+                    unique_list = list(set(self.lvars_list))
+                    unique_list.sort()
+                    for lvar in unique_list:
+                        fout.write(lvar+"\n")
                 
         elif client_data.dwDefineID in self.sim_vars:
             data_bytes = struct.pack("I", client_data.dwData[0])
@@ -187,7 +199,6 @@ class MobiFlightVariableRequests:
         self.send_command("MF.LVars.List")
     
     def set_lvars_list(self, list):
-        self.lvars_list.clear()
         for i in list:
             self.lvars_list.append(i)
     

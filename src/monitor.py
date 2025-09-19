@@ -27,12 +27,7 @@ vr.set("(L:S_OH_ELEC_EXT_PWR) ++ (>L:S_OH_ELEC_EXT_PWR)")
 vr.ping()
 vr.get_version()
 
-try:
-    with open("lvars.txt") as file:
-        lines = [line.rstrip() for line in file]
-    vr.set_lvars_list(lines)
-except FileNotFoundError:
-    logging.info("cannot find file")    
+  
 vr.list_sim_variables()
 wait_counter = 0
 while wait_counter < 50: # wait max 500ms
@@ -42,11 +37,7 @@ while wait_counter < 50: # wait max 500ms
     else:
         break 
     
-fout = open("lvars.txt", "w")
-unique_list = list(set(vr.lvars_list))
-unique_list.sort()
-for lvar in unique_list:
-    fout.write(lvar+"\n")
+
 
 while True:
     #alt_ground = vr.get("(A:GROUND ALTITUDE,Meters)")
