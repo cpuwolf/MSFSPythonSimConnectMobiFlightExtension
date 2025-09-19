@@ -1,4 +1,5 @@
-call env.cmd
+
+call %0\..\env.cmd
 
 python.exe src\monitor.py
 

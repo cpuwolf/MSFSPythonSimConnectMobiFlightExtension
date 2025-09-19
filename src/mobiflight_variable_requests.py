@@ -33,6 +33,7 @@ class MobiFlightVariableRequests:
         self.DATA_STRING_DEFINITION_ID = 0
         self.sm.register_client_data_handler(self.client_data_callback_handler)
         self.initialize_client_data_areas()
+        self.lvars_list = []
 
 
     def add_to_client_data_definition(self, definition_id, offset, size):
@@ -111,8 +112,21 @@ class MobiFlightVariableRequests:
                 null_terminated_bytes = data_with_null
 
             # Decode the bytes into a string using a suitable encoding (e.g., 'utf-8')
-            result_string = null_terminated_bytes.decode('utf-8')
-            print(result_string)
+            text = null_terminated_bytes.decode('utf-8')
+            print(text)
+            if text == "MF.LVars.List.Start":
+                self.lvars_list.clear()
+            elif text == "MF.LVars.List.End":
+                logging.info("client_data_callback_handler lvar end=%d", len(self.lvars_list))
+            elif text == "MF.Pong":
+                logging.info("client_data_callback_handler Pong")
+            elif text.startswith("MF.Clients.Add"):
+                logging.info("client_data_callback_handler %s", text)
+            elif text.startswith("MF.Version"):
+                logging.info("client_data_callback_handler %s", text)
+            else:
+                self.lvars_list.append(text)
+                
         elif client_data.dwDefineID in self.sim_vars:
             data_bytes = struct.pack("I", client_data.dwData[0])
             float_data = struct.unpack('<f', data_bytes)[0]   # unpack delivers a tuple -> [0]

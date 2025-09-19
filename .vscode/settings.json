@@ -1,0 +1,10 @@
+{
+  "filewatcher.commands": [
+    {
+      "match": ".py$",
+      "isAsync": false,
+      "cmd": "${workspaceRoot}\\install\\exec.cmd",
+      "event": "onFileChange"
+    }
+  ]
+}
