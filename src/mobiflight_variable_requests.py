@@ -117,7 +117,6 @@ class MobiFlightVariableRequests:
             print(text)
             if text == "MF.LVars.List.Start":
                 logging.info("client_data_callback_handler lvar start")
-                self.lvars_list.clear()
             elif text == "MF.LVars.List.End":
                 self.lvars_list_end = True
                 logging.info("client_data_callback_handler lvar end=%d", len(self.lvars_list))
