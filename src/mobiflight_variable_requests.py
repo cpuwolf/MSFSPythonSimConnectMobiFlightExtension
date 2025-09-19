@@ -97,7 +97,23 @@ class MobiFlightVariableRequests:
 
     # simconnect library callback
     def client_data_callback_handler(self, client_data):
-        if client_data.dwDefineID in self.sim_vars:
+        if client_data.dwDefineID == self.DATA_STRING_DEFINITION_ID:
+            # Convert the c_ulong Array to a list of strings
+            data_with_null = bytearray(client_data.dwData)
+            # Find the index of the first null byte
+            null_index = data_with_null.find(b'\x00')
+
+            # If a null byte is found, slice the bytearray up to that point
+            if null_index != -1:
+                null_terminated_bytes = data_with_null[:null_index]
+            else:
+                # If no null byte, use the entire bytearray
+                null_terminated_bytes = data_with_null
+
+            # Decode the bytes into a string using a suitable encoding (e.g., 'utf-8')
+            result_string = null_terminated_bytes.decode('utf-8')
+            print(result_string)
+        elif client_data.dwDefineID in self.sim_vars:
             data_bytes = struct.pack("I", client_data.dwData[0])
             float_data = struct.unpack('<f', data_bytes)[0]   # unpack delivers a tuple -> [0]
             float_value = round(float_data, 5)
@@ -108,7 +124,7 @@ class MobiFlightVariableRequests:
                 self.sim_vars[client_data.dwDefineID].float_value = float_value
             logging.debug("client_data_callback_handler %s, raw=%s", sim_var, float_value)
         else:
-            logging.warning("client_data_callback_handler DefinitionID %s not found!", client_data.dwDefineID)
+            logging.warning("client_data_callback_handler DefinitionID %d not found!", client_data.dwDefineID)
 
 
     def get(self, variableString):
@@ -150,4 +166,6 @@ class MobiFlightVariableRequests:
         self.send_command("MF.SimVars.Clear")
         
 
-       
+    def list_sim_variables(self):
+        logging.info("list_sim_variables MF.LVars.List")
+        self.send_command("MF.LVars.List")       

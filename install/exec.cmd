@@ -1,6 +1,5 @@
 call env.cmd
 
-python.exe src\example.py
+python.exe src\monitor.py
 
 popd
-pause
